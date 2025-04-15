@@ -1,0 +1,190 @@
+.navbar {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #2d3748;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.navbar-brand img {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #4a5568;
+  font-weight: 500;
+  transition: color 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.nav-link:hover {
+  color: #4299e1;
+  background: #ebf8ff;
+}
+
+.nav-link.active {
+  color: #4299e1;
+  background: #ebf8ff;
+}
+
+.wallet-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wallet-button:hover {
+  background: #3182ce;
+}
+
+.wallet-button:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+}
+
+.wallet-address {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.wallet-address span {
+  color: #4a5568;
+  font-size: 0.875rem;
+}
+
+.mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  color: #4a5568;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 1rem;
+  }
+
+  .mobile-menu-button {
+    display: block;
+  }
+
+  .navbar-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .navbar-links.active {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .wallet-button,
+  .wallet-address {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* Add this to your existing Navbar.css file */
+
+.disconnect-wallet-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+}
+
+.disconnect-wallet-btn:hover {
+  background-color: #ff7875;
+}
+
+/* Make sure the wallet section is properly displayed */
+.wallet-address {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  color: #4a6cf7;
+  font-weight: 500;
+}
+
+.wallet-address span {
+  margin-right: 5px;
+  color: #666;
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+  .navbar-links.active {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .disconnect-wallet-btn {
+    margin-top: 10px;
+    margin-left: 0;
+  }
+}

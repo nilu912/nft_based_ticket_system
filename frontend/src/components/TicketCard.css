@@ -1,0 +1,118 @@
+.ticket-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+
+.ticket-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.ticket-header {
+  background: linear-gradient(135deg, #4a6cf7, #6a3ef7);
+  color: white;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.ticket-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.ticket-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-valid {
+  background: #28a745;
+  color: white;
+}
+
+.status-used {
+  background: #6c757d;
+  color: white;
+}
+
+.ticket-body {
+  padding: 1.5rem;
+}
+
+.ticket-info {
+  margin-bottom: 1rem;
+}
+
+.ticket-info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.ticket-info-item i {
+  margin-right: 0.8rem;
+  color: #4a6cf7;
+  width: 20px;
+  text-align: center;
+}
+
+.ticket-quantity {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin: 1rem 0;
+}
+
+.ticket-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.ticket-actions button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: none;
+}
+
+.view-button {
+  background: #4a6cf7;
+  color: white;
+}
+
+.view-button:hover {
+  background: #3a5ce5;
+}
+
+.qr-button {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd !important;
+}
+
+.qr-button:hover {
+  background: #e9ecef;
+}
+
+.ticket-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-align: right;
+  margin-top: 1rem;
+}

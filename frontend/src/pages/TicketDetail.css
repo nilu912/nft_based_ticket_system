@@ -1,0 +1,181 @@
+.ticket-detail-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.ticket-detail {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-header {
+  background: linear-gradient(135deg, #4a6cf7, #6a3ef7);
+  color: white;
+  padding: 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.ticket-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.ticket-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-valid {
+  background: #28a745;
+  color: white;
+}
+
+.status-used {
+  background: #6c757d;
+  color: white;
+}
+
+.ticket-body {
+  padding: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.ticket-qr {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ticket-id {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.ticket-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.info-group {
+  margin-bottom: 1.5rem;
+}
+
+.info-group h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #4a6cf7;
+  font-size: 1.2rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.info-item i {
+  margin-right: 1rem;
+  color: #4a6cf7;
+  width: 20px;
+  text-align: center;
+}
+
+.ticket-actions {
+  padding: 1.5rem 2rem;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+}
+
+.back-button {
+  padding: 0.75rem 1.5rem;
+  background: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.back-button:hover {
+  background: #3a5ce5;
+}
+
+.ticket-detail-loading,
+.ticket-detail-error {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 8px;
+  margin-top: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #4a6cf7;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .ticket-body {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .ticket-qr {
+    margin-bottom: 1rem;
+  }
+}
+
+
+/* Add this to your existing TicketDetail.css file */
+
+.download-qr-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.download-qr-button:hover {
+  background-color: #3a5ce5;
+}
+
+.download-qr-button i {
+  font-size: 1rem;
+}
