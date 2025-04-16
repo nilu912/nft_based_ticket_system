@@ -92,7 +92,7 @@ const MyTickets = () => {
   // }
 
   return (
-    <div className="my-tickets">
+    <div className="my-tickets" style={{margin:'10px'}}>
       <div className="tickets-header">
         <h1>My Tickets</h1>
         <div className="tickets-filter">
@@ -103,6 +103,12 @@ const MyTickets = () => {
             <option value="expired">Expired</option>
           </select>
         </div>
+      </div>
+      <div className="my-tickets" style={{'margin': '0px 20px', 'margin-bottom': '20px'}}>
+        <p className="wrap">
+          <strong>Contract Address:</strong>{" "}
+          0xC5D2e84359cdD847032aBA44b3004fd2fd701363
+        </p>
       </div>
 
       {tickets.length === 0 ? (
@@ -139,14 +145,17 @@ const MyTickets = () => {
                 <p>
                   <strong>Time:</strong> {ticket.event[0].duration}
                 </p>
-                <p>
-                  <strong>Location:</strong> {ticket.event[0].address}
-                </p>
                 {/* <p>
                   <strong>Quantity:</strong> {1}
-                </p> */}
+                  </p> */}
+                <p>
+                  <strong>Token Id:</strong> {ticket.token_id}
+                </p>
                 <p>
                   <strong>Price:</strong> ${ticket.event[0].ticket_price}
+                </p>
+                <p>
+                  <strong>Location:</strong> {ticket.event[0].address}
                 </p>
                 <p>
                   <strong>Purchase Date:</strong>{" "}
