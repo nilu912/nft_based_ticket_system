@@ -171,14 +171,14 @@ const MyTickets = () => {
                   }
                 </p>
               </div>
-              <div className="ticket-actions">
+              {/* <div className="ticket-actions">
                 <button
                   className="view-ticket-btn"
                   onClick={() => handleViewTicket(ticket)}
                 >
                   View Ticket
                 </button>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
