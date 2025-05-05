@@ -1,0 +1,137 @@
+.ticket-scanner-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.ticket-scanner-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #4a6cf7;
+}
+
+.event-selector {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.event-selector label {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.event-selector select {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.no-events-message {
+  text-align: center;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+}
+
+.no-events-message button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scanner-section {
+  margin-top: 1rem;
+}
+
+.qr-reader-container {
+  max-width: 500px;
+  margin: 0 auto;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.scanner-instruction {
+  text-align: center;
+  margin-top: 1rem;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.scan-result {
+  margin-top: 2rem;
+}
+
+.ticket-validation {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ticket-validation.valid {
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid #28a745;
+}
+
+.ticket-validation.invalid {
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid #dc3545;
+}
+
+.validation-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.validation-icon .fa-check-circle {
+  color: #28a745;
+}
+
+.validation-icon .fa-times-circle {
+  color: #dc3545;
+}
+
+.ticket-info {
+  margin: 1.5rem 0;
+  text-align: left;
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.reset-button {
+  padding: 0.75rem 1.5rem;
+  background: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.reset-button:hover {
+  background: #3a5ce5;
+}
+
+@media (max-width: 768px) {
+  .ticket-scanner-container {
+    padding: 0 0.5rem;
+  }
+  
+  .qr-reader-container {
+    width: 100%;
+  }
+}
