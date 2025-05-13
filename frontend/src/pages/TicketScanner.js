@@ -118,10 +118,6 @@ const TicketScanner = () => {
   const validateTicket = async (ticketData) => {
     try {
       // Get tickets from localStorage
-      console.log("Provider:", provider);
-      console.log("Contract Address:", ticketData.contractAdd);
-      console.log("Token ID:", ticketData.id);
-
       const contract = new ethers.Contract(
         ticketData.contractAdd,
         nftABI.abi,
@@ -137,7 +133,11 @@ const TicketScanner = () => {
             `http://localhost:5000/api/tickets/getTicket/${ipfsData.ticket_id}`
           )
         ).data;
-        const eventRes = await (await axios.get(`http://localhost:5000/api/events/byId/${ipfsData.event_id}`)).data;
+        const eventRes = await (
+          await axios.get(
+            `http://localhost:5000/api/events/byId/${ipfsData.event_id}`
+          )
+        ).data;
         if (!ipfsData || !ticketRes) {
           setTicketStatus({
             valid: false,
@@ -160,70 +160,28 @@ const TicketScanner = () => {
           });
           return;
         }
-        console.log('before update')
+        console.log("before update");
         const updatedResponse = await axios.patch(
           `http://localhost:5000/api/tickets/${ipfsData.ticket_id}`,
           {
             status: "used",
           }
         );
-        console.log('after update')
+        console.log("after update");
         setTicketStatus({
           valid: true,
           message: "Ticket validated successfully",
           ticket: ticketRes,
-          event: eventRes
+          event: eventRes,
         });
 
-        console.log(ticketRes);
-        console.log(ipfsData);
-        console.log(eventRes);
-        console.log(updatedResponse);
+        // console.log(ticketRes);
+        // console.log(ipfsData);
+        // console.log(eventRes);
+        // console.log(updatedResponse);
       } catch (error) {
         console.error(error);
       }
-
-      // const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
-
-      // // Find the ticket with matching ID
-      // const ticket = tickets.find((t) => t.id === ticketData.id);
-
-      // if (!ticket) {
-      //   setTicketStatus({
-      //     valid: false,
-      //     message: "Ticket not found",
-      //   });
-      //   return;
-      // }
-
-      // Check if ticket is for the selected event
-      // if (ticket.eventId !== selectedEvent) {
-      //   setTicketStatus({
-      //     valid: false,
-      //     message: "Ticket is for a different event",
-      //   });
-      //   return;
-      // }
-
-      // Check if ticket has already been used
-      // if (ticket.status === "used") {
-      //   setTicketStatus({
-      //     valid: false,
-      //     message: "Ticket has already been used",
-      //   });
-      //   return;
-      // }
-
-      // Ticket is valid, mark it as used
-      // const updatedTickets = tickets.map((t) => {
-      //   if (t.id === ticket.id) {
-      //     return { ...t, status: "used" };
-      //   }
-      //   return t;
-      // });
-
-      // Save updated tickets to localStorage
-      // localStorage.setItem("tickets", JSON.stringify(updatedTickets));
     } catch (error) {
       setTicketStatus({
         valid: false,
@@ -309,7 +267,8 @@ const TicketScanner = () => {
                         <strong>Event:</strong> {ticketStatus.event.event_name}
                       </p>
                       <p>
-                        <strong>Ticket ID:</strong> {ticketStatus.ticket.ticket_id}
+                        <strong>Ticket ID:</strong>{" "}
+                        {ticketStatus.ticket.ticket_id}
                       </p>
                       <p>
                         <strong>Wallet:</strong>{" "}
