@@ -22,14 +22,14 @@ const OrganizerDashboard = () => {
     description: "",
     image: "",
   });
-
+  const token = localStorage.getItem('token');
   // Fetch data when component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if(!token)
+          return;
         setLoading(true);
-
-        const token = localStorage.getItem("token"); // Retrieve the token from localStorage
 
         const response = await fetch(
           "http://localhost:5000/api/events/orgEvents",
@@ -104,7 +104,6 @@ const OrganizerDashboard = () => {
   const handleCreateEvent = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
     // alert("Token : "+token);
     // Check if token is available
     if (!token) {
@@ -183,6 +182,20 @@ const OrganizerDashboard = () => {
     return ticketSales.filter((sale) => sale.eventId === eventId);
   };
 
+  if(!token){
+    return (
+      <div className="no-tickets">
+          <h2>Wallet not Connected</h2>
+          <p>Please connect wallet first!</p>
+          <button
+            className="browse-events-btn"
+            // onClick={() => navigate("/events")}
+          >
+            Connect Wallet
+          </button>
+        </div>
+    )
+  }
   if (loading) {
     return <div className="loading">Loading dashboard...</div>;
   }

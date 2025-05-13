@@ -246,7 +246,7 @@ const Events = () => {
         ) : (
           filteredEvents.map((event) => (
             <div
-              key={event.id}
+              key={event.event_id}
               style={{
                 display: "flex",
                 flexDirection: "row",

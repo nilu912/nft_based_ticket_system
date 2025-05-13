@@ -1,141 +1,102 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { QRCodeSVG } from 'qrcode.react';
-import './TicketDetail.css';
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { QRCodeCanvas } from "qrcode.react";
+import axios from "axios";
+import "./TicketDetail.css";
 
 const TicketDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [ticket, setTicket] = useState(null);
+  const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const qrCodeRef = useRef(null);
 
-  // Enhanced download function to create a complete ticket card
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
   const downloadTicketCard = () => {
-    if (!qrCodeRef.current) return;
-    
-    // Get the SVG element
-    const svgElement = qrCodeRef.current.querySelector('svg');
-    
-    if (!svgElement) return;
-    
-    // Create a canvas element
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Set canvas dimensions for a ticket card
-    canvas.width = 800;
-    canvas.height = 400;
-    
-    // Create an image from the SVG
-    const img = new Image();
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const svgUrl = URL.createObjectURL(svgBlob);
-    
-    img.onload = () => {
-      // Fill background with gradient
-      const gradient = ctx.createLinearGradient(0, 0, 800, 0);
-      gradient.addColorStop(0, '#4a6cf7');
-      gradient.addColorStop(1, '#6a3ef7');
+    const qrCanvas = qrCodeRef.current?.querySelector("canvas");
+    if (!qrCanvas || !ticket || !event) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 1920;
+    canvas.height = 1080;
+    const ctx = canvas.getContext("2d");
+
+    const qrImage = new Image();
+    qrImage.onload = () => {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      gradient.addColorStop(0, "#4a6cf7");
+      gradient.addColorStop(1, "#6a3ef7");
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 800, 80);
-      
-      // Fill main background
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 80, 800, 320);
-      
-      // Add event title
-      ctx.font = 'bold 28px Arial';
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      ctx.fillText(ticket.eventTitle, 400, 50);
-      
-      // Draw the QR code
-      ctx.drawImage(img, 50, 100, 200, 200);
-      
-      // Add ticket info
-      ctx.font = 'bold 18px Arial';
-      ctx.fillStyle = '#4a6cf7';
-      ctx.textAlign = 'left';
-      ctx.fillText('EVENT DETAILS', 300, 120);
-      
-      ctx.font = '16px Arial';
-      ctx.fillStyle = 'black';
-      ctx.fillText(`Date: ${new Date(ticket.eventDate).toLocaleDateString()}`, 300, 150);
-      ctx.fillText(`Time: ${ticket.eventTime}`, 300, 180);
-      ctx.fillText(`Location: ${ticket.eventLocation}`, 300, 210);
-      
-      ctx.font = 'bold 18px Arial';
-      ctx.fillStyle = '#4a6cf7';
-      ctx.fillText('TICKET DETAILS', 300, 250);
-      
-      ctx.font = '16px Arial';
-      ctx.fillStyle = 'black';
-      ctx.fillText(`Ticket ID: ${ticket.id}`, 300, 280);
-      ctx.fillText(`Quantity: ${ticket.quantity}`, 300, 310);
-      ctx.fillText(`Price: $${ticket.price}`, 300, 340);
-      ctx.fillText(`Purchase Date: ${new Date(ticket.purchaseDate).toLocaleDateString()}`, 300, 370);
-      
-      // Add status badge
-      ctx.fillStyle = ticket.status === 'valid' ? '#28a745' : '#6c757d';
+      ctx.fillRect(0, 0, canvas.width, 100);
+
+      ctx.fillStyle = "white";
+      ctx.font = "bold 48px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(event.event_name || "Untitled Event", canvas.width / 2, 65);
+
+      ctx.drawImage(qrImage, 100, 150, 400, 400);
+
+      ctx.fillStyle = "#000";
+      ctx.font = "28px Arial";
+      ctx.textAlign = "left";
+      ctx.fillText(`Date: ${formatDate(event.event_date)}`, 550, 180);
+      ctx.fillText(`Time: ${event.duration}`, 550, 230);
+      ctx.fillText(`Location: ${event.address}`, 550, 280);
+
+      ctx.fillText(`Ticket ID: ${ticket.ticket_id}`, 550, 360);
+      ctx.fillText(`Price: $${event.ticket_price}`, 550, 410);
+      ctx.fillText(`Purchased: ${formatDate(ticket.created_at)}`, 550, 460);
+
+      const walletShort = `${ticket.wallet_address?.slice(0, 6)}...${ticket.wallet_address?.slice(-4)}`;
+      ctx.fillText(`Wallet: ${walletShort}`, 100, 600);
+
+      ctx.fillStyle = ticket.status === "valid" ? "#28a745" : "#6c757d";
       ctx.beginPath();
-      ctx.roundRect(650, 30, 120, 30, 15);
+      ctx.roundRect(1550, 40, 250, 50, 25);
       ctx.fill();
-      
-      ctx.font = 'bold 16px Arial';
-      ctx.fillStyle = 'white';
-      ctx.textAlign = 'center';
-      ctx.fillText(ticket.status.toUpperCase(), 710, 50);
-      
-      // Add wallet info
-      ctx.font = '14px Arial';
-      ctx.fillStyle = '#666';
-      ctx.textAlign = 'left';
-      const walletText = `${ticket.walletAddress.slice(0, 6)}...${ticket.walletAddress.slice(-4)}`;
-      ctx.fillText(`Wallet: ${walletText}`, 50, 330);
-      
-      // Convert to data URL and download
-      const dataUrl = canvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = `EventGo-Ticket-${ticket.id}.png`;
+
+      ctx.fillStyle = "white";
+      ctx.font = "bold 30px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(ticket.status?.toUpperCase(), 1675, 75);
+
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `EventGo-Ticket-${ticket.ticket_id}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      
-      // Clean up
-      URL.revokeObjectURL(svgUrl);
     };
-    
-    img.src = svgUrl;
+
+    qrImage.src = qrCanvas.toDataURL("image/png");
   };
 
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
-        console.log('Fetched tickets:', tickets);
-        console.log('Looking for ticket with ID:', id);
-        
-        // Convert both IDs to strings for comparison
-        const foundTicket = tickets.find(t => String(t.id) === String(id));
-        console.log('Found ticket:', foundTicket);
-        
-        if (foundTicket) {
-          setTicket(foundTicket);
-        } else {
-          setError('Ticket not found');
-        }
+        const ticketRes = await axios.get(`http://localhost:5000/api/tickets/getTicket/${id}`);
+        const eventRes = await axios.get(`http://localhost:5000/api/events/byId/${ticketRes.data.event_id}`);
+        setTicket(ticketRes.data);
+        setEvent(eventRes.data);
       } catch (err) {
-        setError('Error loading ticket details');
-        console.error('Error fetching ticket:', err);
+        console.error("Fetch error:", err);
+        setError("Unable to load ticket details. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchTicket();
   }, [id]);
 
@@ -148,98 +109,86 @@ const TicketDetail = () => {
     );
   }
 
-  if (error) {
+  if (error || !ticket || !event) {
     return (
       <div className="ticket-detail-error">
-        <p>{error}</p>
-        <button onClick={() => navigate('/my-tickets')}>Back to My Tickets</button>
+        <p>{error || "Ticket not found."}</p>
+        <button onClick={() => navigate("/my-tickets")}>Back to My Tickets</button>
       </div>
     );
   }
 
-  if (!ticket) {
-    return (
-      <div className="ticket-detail-error">
-        <p>Ticket not found</p>
-        <button onClick={() => navigate('/my-tickets')}>Back to My Tickets</button>
-      </div>
-    );
-  }
-
-  // Create ticket data for QR code
   const ticketData = JSON.stringify({
-    id: ticket.id,
-    eventId: ticket.eventId,
-    eventTitle: ticket.eventTitle,
-    quantity: ticket.quantity,
-    walletAddress: ticket.walletAddress,
-    status: ticket.status
+    id: ticket.token_id,
+    eventId: ticket.event_id,
+    eventTitle: event.event_name,
+    contractAdd: process.env.REACT_APP_CONTRACT_ADDRESS || "N/A",
+    walletAddress: ticket.wallet_address,
+    status: ticket.status,
   });
 
   return (
     <div className="ticket-detail-container">
       <div className="ticket-detail">
         <div className="ticket-header">
-          <h1>{ticket.eventTitle}</h1>
-          <div className={`ticket-status status-${ticket.status}`}>
-            {ticket.status}
-          </div>
+          <h1>{event.event_name}</h1>
+          <div className={`ticket-status status-${ticket.status}`}>{ticket.status}</div>
         </div>
-        
+
         <div className="ticket-body">
           <div className="ticket-qr" ref={qrCodeRef}>
-            <QRCodeSVG value={ticketData} size={200} level="H" />
-            <p className="ticket-id">ID: {ticket.id}</p>
+            <QRCodeCanvas value={ticketData} size={1200} level="H" style={{ width: 200, height: 200 }}/>
+            <p className="ticket-id">ID: {ticket.event_id}</p>
             <button onClick={downloadTicketCard} className="download-qr-button">
               <i className="fas fa-download"></i> Download Ticket
             </button>
           </div>
-          
+
           <div className="ticket-info">
             <div className="info-group">
               <h3>Event Details</h3>
               <div className="info-item">
                 <i className="fas fa-calendar"></i>
-                <span>{new Date(ticket.eventDate).toLocaleDateString()}</span>
+                <span>{formatDate(event.event_date)}</span>
               </div>
               <div className="info-item">
                 <i className="fas fa-clock"></i>
-                <span>{ticket.eventTime}</span>
+                <span>{event.duration}</span>
               </div>
               <div className="info-item">
                 <i className="fas fa-map-marker-alt"></i>
-                <span>{ticket.eventLocation}</span>
+                <span>{event.address}</span>
               </div>
             </div>
-            
+
             <div className="info-group">
               <h3>Ticket Details</h3>
               <div className="info-item">
-                <i className="fas fa-ticket-alt"></i>
-                <span>Quantity: {ticket.quantity}</span>
-              </div>
-              <div className="info-item">
                 <i className="fas fa-money-bill-wave"></i>
-                <span>Price: ${ticket.price}</span>
+                <span>Price: ${event.ticket_price}</span>
               </div>
               <div className="info-item">
                 <i className="fas fa-shopping-cart"></i>
-                <span>Purchased: {new Date(ticket.purchaseDate).toLocaleDateString()}</span>
+                <span>Purchased: {formatDate(ticket.created_at)}</span>
               </div>
             </div>
-            
+
             <div className="info-group">
               <h3>Blockchain Details</h3>
               <div className="info-item">
                 <i className="fas fa-wallet"></i>
-                <span>Wallet: {`${ticket.walletAddress.slice(0, 6)}...${ticket.walletAddress.slice(-4)}`}</span>
+                <span>
+                  Wallet: {ticket.wallet_address
+                    ? `${ticket.wallet_address.slice(0, 6)}...${ticket.wallet_address.slice(-4)}`
+                    : "N/A"}
+                </span>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="ticket-actions">
-          <button onClick={() => navigate('/my-tickets')} className="back-button">
+          <button onClick={() => navigate("/my-tickets")} className="back-button">
             Back to My Tickets
           </button>
         </div>

@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [ walletAddress, setWalletAddress] = useState('')
+  // const [ provider, setProvider] = useState(null)
   useEffect(() => {
     checkWalletConnection();
   }, []);

@@ -10,17 +10,20 @@ const MyTickets = () => {
   const [filter, setFilter] = useState("all"); // all, valid, used, expired
   const navigate = useNavigate();
   const { walletAddress } = useAuth();
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchTickets = async () => {
       try {
+        if(!token)
+          return;
         const ticektsResponse = await fetch(
           `http://localhost:5000/api/tickets/`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: localStorage.getItem("token"), // Make sure to pass the token
+              token: token, // Make sure to pass the token
             },
           }
         );
@@ -58,6 +61,7 @@ const MyTickets = () => {
         const filteredData = combineData.filter(
           (t) => t.wallet_address == walletAddress
         );
+        console.log("env:",process.env.REACT_APP_CONTRACT_ADDRESS)
         console.log("Filtered data: ", filteredData);
         setTickets(filteredData);
       } catch (err) {
@@ -90,7 +94,20 @@ const MyTickets = () => {
   // if (error) {
   //   return <div className="error">{error}</div>;
   // }
-
+  if(!token){
+    return (
+      <div className="no-tickets">
+          <h2>Wallet not Connected</h2>
+          <p>Please connect wallet first!</p>
+          <button
+            className="browse-events-btn"
+            onClick={() => navigate("/events")}
+          >
+            Connect Wallet
+          </button>
+        </div>
+    )
+  }
   return (
     <div className="my-tickets" style={{margin:'10px'}}>
       <div className="tickets-header">
@@ -107,7 +124,7 @@ const MyTickets = () => {
       <div className="my-tickets" style={{'margin': '0px 20px', 'margin-bottom': '20px'}}>
         <p className="wrap">
           <strong>Contract Address:</strong>{" "}
-          0xacAdb443c57b898F6D4B22621C7b037414BDa660
+          {process.env.REACT_APP_CONTRACT_ADDRESS}
         </p>
       </div>
 
@@ -128,6 +145,7 @@ const MyTickets = () => {
             <div key={ticket.ticekt_id} className="ticket-card">
               <div className="ticket-header">
                 <h3>{ticket.event[0].event_name}</h3>
+                <button onClick={() => navigate(`/tickets/${ticket.ticket_id}`)}>Click here</button>
                 {/* <span className={`status ${ticket.status}`}>
                   {ticket.status.charAt(0).toUpperCase() +
                     ticket.status.slice(1)}

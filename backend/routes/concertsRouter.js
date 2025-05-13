@@ -123,7 +123,7 @@ concertsRouter.get("/", async (req, res, next) => {
 
 concertsRouter.get("/byId/:event_id", async (req, res, next) => {
   try {
-    const eventsData = await eventModel.find({
+    const eventsData = await eventModel.findOne({
       event_id: req.params.event_id
     });
     if (!eventsData) res.status(404).json({ message: "No event found!" });
