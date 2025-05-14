@@ -38,7 +38,20 @@
   margin-bottom: 1rem;
   color: #555;
 }
-
+.button {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  color:#4a6cf7;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
 .no-tickets button {
   padding: 0.75rem 1.5rem;
   background: #4a6cf7;
@@ -109,7 +122,7 @@
 }
 
 .ticket-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -258,7 +271,8 @@
   transform: translateY(0);
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   padding: 3rem;
   font-size: 1.25rem;

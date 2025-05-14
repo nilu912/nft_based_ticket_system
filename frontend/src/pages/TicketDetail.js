@@ -138,7 +138,7 @@ const TicketDetail = () => {
         <div className="ticket-body">
           <div className="ticket-qr" ref={qrCodeRef}>
             <QRCodeCanvas value={ticketData} size={1200} level="H" style={{ width: 200, height: 200 }}/>
-            <p className="ticket-id">ID: {ticket.event_id}</p>
+            <p className="ticket-id">ID: {ticket.ticket_id}</p>
             <button onClick={downloadTicketCard} className="download-qr-button">
               <i className="fas fa-download"></i> Download Ticket
             </button>
@@ -169,7 +169,7 @@ const TicketDetail = () => {
               </div>
               <div className="info-item">
                 <i className="fas fa-shopping-cart"></i>
-                <span>Purchased: {formatDate(ticket.created_at)}</span>
+                <span>Purchased: {formatDate(ticket.purchase_date)}</span>
               </div>
             </div>
 

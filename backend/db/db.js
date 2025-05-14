@@ -18,6 +18,7 @@ const eventSchema = new Schema({
     event_date: { type: Date, required: true },
     duration: { type: String },
     total_tickets: { type: Number, required: true },
+    sold_tickets: {type: Number, required: true, default: 0},
     ticket_price: { type: Number, required: true },
     wallet_address: { type: String, required: true },
     address: { type: String, required: true},

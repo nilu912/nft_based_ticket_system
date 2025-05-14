@@ -46,6 +46,7 @@ const Events = () => {
             duration,
             ticket_price,
             total_tickets,
+            sold_tickets,
             // Omit unwanted properties
             address,
             created_at,
@@ -62,7 +63,7 @@ const Events = () => {
             date: event_date,
             time: duration,
             price: ticket_price,
-            availableTickets: total_tickets,
+            availableTickets: Number(total_tickets)-Number(sold_tickets),
             description: rest.description,
             address: address, // Include description or other necessary fields
             // You can include other properties from `rest` if needed

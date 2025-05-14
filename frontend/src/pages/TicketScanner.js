@@ -11,17 +11,21 @@ const provider = new ethers.JsonRpcProvider(process.env.REACT_APP_API_URL);
 
 const TicketScanner = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [scanning, setScanning] = useState(true);
   const [scannedResult, setScannedResult] = useState(null);
   const [ticketStatus, setTicketStatus] = useState(null);
   const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const qrScannerRef = useRef(null);
+  const selectedEventRef = useRef(1);
 
+  useEffect(()=>{
+    console.log("value set", selectedEvent)
+    selectedEventRef.current = selectedEvent
+  },[selectedEvent])
   useEffect(() => {
     async function fetchEventData() {
-      const token = localStorage.getItem("token");
       try {
         const response = await axios.get(
           "http://localhost:5000/api/events/orgEvents",
@@ -35,7 +39,9 @@ const TicketScanner = () => {
         // console.log(response.data.eventData);
         if (response.data.eventData && response.data.eventData.length > 0) {
           setEvents(response.data.eventData);
-          setSelectedEvent(response.data.eventData[0].event_id); // Correct field
+          console.log("events", response.data.eventData)
+          setSelectedEvent(response.data.eventData[0].event_id)
+          // setSelectedEvent(response.data.eventData[0].event_id); // Correct field
         }
         //   if (organizerEvents.length > 0) {
         //     setSelectedEvent(organizerEvents[0].id);
@@ -46,7 +52,7 @@ const TicketScanner = () => {
       }
     }
     fetchEventData();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     // Initialize QR scanner when component mounts and scanning is true
@@ -117,6 +123,10 @@ const TicketScanner = () => {
 
   const validateTicket = async (ticketData) => {
     try {
+      // console.log("contract time",selectedEvent);
+
+      console.log(nftABI.abi)
+      // console.log("selected event", Number(selectedEventRef.current));
       // Get tickets from localStorage
       const contract = new ethers.Contract(
         ticketData.contractAdd,
@@ -138,6 +148,7 @@ const TicketScanner = () => {
             `http://localhost:5000/api/events/byId/${ipfsData.event_id}`
           )
         ).data;
+
         if (!ipfsData || !ticketRes) {
           setTicketStatus({
             valid: false,
@@ -145,8 +156,14 @@ const TicketScanner = () => {
           });
           return;
         }
-
-        if (ipfsData.event_id !== ticketRes.event_id) {
+        if(await contract.ownerOf(ticketData.id) !== ticketRes.wallet_address){
+          setTicketStatus({
+            valid: false,
+            message: "Ticket is not purchased by currect NFT holder",
+          });
+          return;
+        }
+        if (Number(ipfsData.event_id) !== Number(selectedEventRef.current)) {
           setTicketStatus({
             valid: false,
             message: "Ticket is for a different event",
@@ -175,10 +192,10 @@ const TicketScanner = () => {
           event: eventRes,
         });
 
-        // console.log(ticketRes);
-        // console.log(ipfsData);
-        // console.log(eventRes);
-        // console.log(updatedResponse);
+        console.log(ticketRes);
+        console.log(ipfsData);
+        console.log(eventRes);
+        console.log(updatedResponse);
       } catch (error) {
         console.error(error);
       }
@@ -197,6 +214,7 @@ const TicketScanner = () => {
   };
 
   const handleEventChange = (e) => {
+    console.log(e.target.value);
     setSelectedEvent(e.target.value);
   };
 

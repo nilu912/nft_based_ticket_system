@@ -7,7 +7,7 @@ const MyTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("all"); // all, valid, used, expired
+  const [filter, setFilter] = useState("purchased"); // all, valid, used, expired
   const navigate = useNavigate();
   const { walletAddress } = useAuth();
   const token = localStorage.getItem("token")
@@ -37,7 +37,9 @@ const MyTickets = () => {
         if (!ticektsResponse.ok || !eventResponse.ok) {
           throw new Error("Failed to fetch event");
         }
-        const ticketData = await ticektsResponse.json();
+        const ticketResponse = await ticektsResponse.json();
+        const ticketData = filteredTickets(ticketResponse);
+        console.log(ticketData)
         const eventData = await eventResponse.json();
         const combineData = ticketData.map((t) => ({
           ticket_id: t.ticket_id,
@@ -61,7 +63,6 @@ const MyTickets = () => {
         const filteredData = combineData.filter(
           (t) => t.wallet_address == walletAddress
         );
-        console.log("env:",process.env.REACT_APP_CONTRACT_ADDRESS)
         console.log("Filtered data: ", filteredData);
         setTickets(filteredData);
       } catch (err) {
@@ -72,13 +73,15 @@ const MyTickets = () => {
     };
 
     fetchTickets();
-  }, []);
+  }, [filter]);
 
-  const filteredTickets = () => {
-    tickets.filter((ticket) => {
-      if (filter === "all") return true;
-      return ticket.status === filter;
+  const filteredTickets = (ticektData) => {
+    if(filter === 'all')
+      return ticektData;
+    const data = ticektData.filter((ticket) => {
+      if(ticket.status === filter) return ticket;
     });
+    return data;
   };
 
   const handleViewTicket = (ticket) => {
@@ -115,9 +118,8 @@ const MyTickets = () => {
         <div className="tickets-filter">
           <select value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All Tickets</option>
-            <option value="valid">Valid</option>
+            <option value="purchased">Purchased</option>
             <option value="used">Used</option>
-            <option value="expired">Expired</option>
           </select>
         </div>
       </div>
@@ -145,7 +147,7 @@ const MyTickets = () => {
             <div key={ticket.ticekt_id} className="ticket-card">
               <div className="ticket-header">
                 <h3>{ticket.event[0].event_name}</h3>
-                <button onClick={() => navigate(`/tickets/${ticket.ticket_id}`)}>Click here</button>
+                <button className="button" onClick={() => navigate(`/tickets/${ticket.ticket_id}`)}>Click here</button>
                 {/* <span className={`status ${ticket.status}`}>
                   {ticket.status.charAt(0).toUpperCase() +
                     ticket.status.slice(1)}

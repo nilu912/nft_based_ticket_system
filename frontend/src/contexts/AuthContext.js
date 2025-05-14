@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { BrowserProvider, JsonRpcProvider } from "ethers";
 import { ethers } from "ethers";
+import axios from "axios";
 const AuthContext = createContext();
 
 // Add the RPC URL definition here
@@ -11,78 +12,97 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [user, setUser] = useState(null);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [ walletAddress, setWalletAddress] = useState('')
+  const [walletAddress, setWalletAddress] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [ provider, setProvider] = useState(null)
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (token === null) return;
     checkWalletConnection();
   }, []);
 
   const checkWalletConnection = async () => {
     try {
       // fetch(`http://localhost:5000/api/users/${setUser.walletAddress}`)
+      setIsAuthenticated(true);
+      console.log("checking");
       if (window.ethereum) {
-        const provider = new BrowserProvider(window.ethereum);
-        const accounts = await provider.listAccounts();
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const address = await signer.getAddress();
 
-        if (accounts.length > 0) {
-          // Make sure we have a valid address and convert it to string
-          const address = accounts[0] ? accounts[0].address : null;
-          if (address) {
-            setUser({
-              walletAddress: address,
-              provider: provider,
-            });
-          }
+        const userData = (
+          await axios.post(`http://localhost:5000/api/users/getuser/`, {
+            wallet_address: address,
+          })
+        ).data;
+        if (
+          userData.userData.wallet_address.toLowerCase() ===
+          address.toString().toLowerCase()
+        ) {
+          // setUser({
+          //   walletAddress: address,
+          //   provider: provider,
+          // });
+          setIsAuthenticated(true);
           setWalletAddress(address);
         }
       }
     } catch (err) {
       console.error("Error checking wallet connection:", err);
       setError("Failed to check wallet connection");
-    } finally {
-      setLoading(false);
     }
   };
 
   const connectWallet = async () => {
     if (!window.ethereum) {
-      throw new Error("Please install MetaMask to use this application");
+      alert("Metamask not installed. Please install it!");
+      return;
     }
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      setWalletAddress(address);
+      const account = await signer.getAddress();
+      // Fetch the nonce from the server
+      const nonceResponse = await fetch(
+        "http://localhost:5000/api/users/nonce",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ wallet_address: account }),
+        }
+      );
+      const { nonce } = await nonceResponse.json();
 
-      const response = await fetch("http://localhost:5000/api/users/nonce", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wallet_address: address }),
-      });
-      const { nonce } = await response.json();
-
-      // Ask user to sign the message
       const signature = await signer.signMessage(nonce);
 
-      // Send signed message to backend for verification
       const verifyResponse = await fetch(
         "http://localhost:5000/api/users/signin",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ walletAddress: address, signature }),
+          body: JSON.stringify({ walletAddress: account, signature }),
         }
       );
-
-      const data = await verifyResponse.json();
-
-      if (verifyResponse.ok) {
-        localStorage.setItem("authToken", data.token);
-        alert("Login successful!");
+      const { token } = await verifyResponse.json();
+      if (!token) {
+        alert("You are not registered yet. please register first!");
+        console.log("Token not found!");
+        return;
       }
+
+      localStorage.setItem("token", token);
+      // setUser({
+      //   walletAddress: account,
+      //   provider: provider,
+      // });
+      setIsAuthenticated(true);
+      setWalletAddress(account);
+      alert("Login successful!");
     } catch (error) {
       console.error(error);
     }
@@ -90,7 +110,10 @@ export const AuthProvider = ({ children }) => {
 
   const disconnectWallet = async () => {
     try {
-      setUser(null);
+      // setUser(null);
+      setWalletAddress(null);
+      setIsAuthenticated(null);
+      localStorage.removeItem('token')
     } catch (err) {
       console.error("Error disconnecting wallet:", err);
       setError("Failed to disconnect wallet");
@@ -99,17 +122,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const value = {
-    user,
-    loading,
+    // user,
+    // loading,
     error,
     connectWallet,
     disconnectWallet,
-    walletAddress
+    walletAddress,
+    isAuthenticated,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

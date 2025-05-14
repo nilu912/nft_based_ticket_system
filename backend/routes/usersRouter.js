@@ -118,10 +118,9 @@ usersRouter.post("/signin", async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" } // Set an expiry time for the token (optional)
     );
-
     // Return the token in the response
-    res.json({
-      token: token,
+    res.status(200).json({
+      token
     });
   } catch (error) {
     console.error("Error during signin:", error);
@@ -151,7 +150,7 @@ usersRouter.post("/getuser", async (req, res, next) => {
     }
 
     // Send back the user data
-    res.json({ userData });
+    res.status(200).json({ userData });
   } catch (error) {
     // Handle any server errors
     res

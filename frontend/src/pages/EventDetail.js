@@ -7,7 +7,7 @@ import axios from "axios";
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth(); // Add this line to get the user from context
+  // const { user } = useAuth(); // Add this line to get the user from context
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +19,6 @@ const EventDetail = () => {
     const fetchEvent = async () => {
       try {
         setLoading(true);
-        console.log(id)
         // API call to fetch event by event_id
         const response = await fetch(
           `http://localhost:5000/api/events/byId/${id}`,
@@ -38,10 +37,10 @@ const EventDetail = () => {
         }
 
         const data = await response.json();
-        console.log(data[0]);
+        console.log("event data",data);
 
         // Assuming the API returns a single event object, not an array
-        const foundEvent = data[0]; // Assuming the event data is in eventData property
+        const foundEvent = data; // Assuming the event data is in eventData property
 
         if (foundEvent) {
           // Set the event data directly from the API response
@@ -51,7 +50,8 @@ const EventDetail = () => {
             date: foundEvent.event_date,
             time: foundEvent.duration,
             price: foundEvent.ticket_price,
-            availableTickets: foundEvent.total_tickets,
+            sold_tickets: foundEvent.sold_tickets,
+            availableTickets: Number(foundEvent.total_tickets) - Number(foundEvent.sold_tickets),
             description: foundEvent.description,
             address: foundEvent.address,
             walletAddress: foundEvent.wallet_address,
@@ -105,7 +105,7 @@ const EventDetail = () => {
       const updateResponse = await axios.patch(
         `http://localhost:5000/api/events/${event.id}`,
         {
-          total_tickets: (parseInt(event.availableTickets) - 1) 
+          sold_tickets: (parseInt(event.sold_tickets) + 1) 
         },{
         "type": "PATCH",
       })
