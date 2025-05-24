@@ -25,52 +25,81 @@ const TicketDetail = () => {
     if (!qrCanvas || !ticket || !event) return;
 
     const canvas = document.createElement("canvas");
-    canvas.width = 1920;
-    canvas.height = 1080;
+    const scale = 2; // for high resolution
+    canvas.width = 1200 * scale;
+    canvas.height = 800 * scale;
     const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
 
     const qrImage = new Image();
     qrImage.onload = () => {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      // Header gradient
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width / scale, 0);
       gradient.addColorStop(0, "#4a6cf7");
       gradient.addColorStop(1, "#6a3ef7");
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, 100);
+      ctx.fillRect(0, 0, canvas.width / scale, 120);
 
-      ctx.fillStyle = "white";
-      ctx.font = "bold 48px Arial";
+      // Event Name
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 50px Arial";
       ctx.textAlign = "center";
-      ctx.fillText(event.event_name || "Untitled Event", canvas.width / 2, 65);
+      ctx.fillText(
+        event.event_name || "Untitled Event",
+        canvas.width / (2 * scale),
+        80
+      );
 
-      ctx.drawImage(qrImage, 100, 150, 400, 400);
+      // Draw QR code (sharper)
+      ctx.drawImage(qrImage, 100, 180, 420, 420);
 
-      ctx.fillStyle = "#000";
-      ctx.font = "28px Arial";
+      // Event Details
+      ctx.fillStyle = "#000000";
+      ctx.font = "30px Arial";
       ctx.textAlign = "left";
-      ctx.fillText(`Date: ${formatDate(event.event_date)}`, 550, 180);
-      ctx.fillText(`Time: ${event.duration}`, 550, 230);
-      ctx.fillText(`Location: ${event.address}`, 550, 280);
+      const leftX = 580;
+      let y = 200;
+      const lineGap = 50;
 
-      ctx.fillText(`Ticket ID: ${ticket.ticket_id}`, 550, 360);
-      ctx.fillText(`Price: $${event.ticket_price}`, 550, 410);
-      ctx.fillText(`Purchased: ${formatDate(ticket.created_at)}`, 550, 460);
+      ctx.fillText(`📅 Date: ${formatDate(event.event_date)}`, leftX, y);
+      y += lineGap;
+      ctx.fillText(`⏰ Time: ${event.duration}`, leftX, y);
+      y += lineGap;
+      ctx.fillText(`📍 Location: ${event.address}`, leftX, y);
 
-      const walletShort = `${ticket.wallet_address?.slice(0, 6)}...${ticket.wallet_address?.slice(-4)}`;
-      ctx.fillText(`Wallet: ${walletShort}`, 100, 600);
+      // Ticket Info
+      y += lineGap * 1.5;
+      ctx.fillText(`🎫 Ticket ID: ${ticket.ticket_id}`, leftX, y);
+      y += lineGap;
+      ctx.fillText(`💵 Price: $${event.ticket_price}`, leftX, y);
+      y += lineGap;
+      ctx.fillText(`🛒 Purchased: ${formatDate(ticket.created_at)}`, leftX, y);
 
-      ctx.fillStyle = ticket.status === "valid" ? "#28a745" : "#6c757d";
+      // Wallet Address
+      const walletShort = `${ticket.wallet_address?.slice(
+        0,
+        6
+      )}...${ticket.wallet_address?.slice(-4)}`;
+      ctx.fillText(`🔑 Wallet: ${walletShort}`, 100, 670);
+
+      // Ticket Status Box
+      const statusColor = ticket.status === "valid" ? "#28a745" : "#6c757d";
+      ctx.fillStyle = statusColor;
       ctx.beginPath();
-      ctx.roundRect(1550, 40, 250, 50, 25);
+      ctx.roundRect(1600, 40, 220, 50, 25);
       ctx.fill();
 
-      ctx.fillStyle = "white";
-      ctx.font = "bold 30px Arial";
+      // Ticket Status Text
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 28px Arial";
       ctx.textAlign = "center";
-      ctx.fillText(ticket.status?.toUpperCase(), 1675, 75);
+      ctx.fillText(ticket.status?.toUpperCase(), 1710, 75);
 
+      // Save as PNG
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
@@ -80,14 +109,87 @@ const TicketDetail = () => {
       document.body.removeChild(a);
     };
 
-    qrImage.src = qrCanvas.toDataURL("image/png");
+    // Ensure QR image is high-res
+    const qrTempCanvas = document.createElement("canvas");
+    qrTempCanvas.width = 1024;
+    qrTempCanvas.height = 1024;
+    const tempCtx = qrTempCanvas.getContext("2d");
+    tempCtx.drawImage(qrCanvas, 0, 0, 1024, 1024);
+    qrImage.src = qrTempCanvas.toDataURL("image/png");
   };
+
+  // const downloadTicketCard = () => {
+  //   const qrCanvas = qrCodeRef.current?.querySelector("canvas");
+  //   if (!qrCanvas || !ticket || !event) return;
+
+  //   const canvas = document.createElement("canvas");
+  //   canvas.width = 1920;
+  //   canvas.height = 1080;
+  //   const ctx = canvas.getContext("2d");
+
+  //   const qrImage = new Image();
+  //   qrImage.onload = () => {
+  //     ctx.fillStyle = "#fff";
+  //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  //     const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  //     gradient.addColorStop(0, "#4a6cf7");
+  //     gradient.addColorStop(1, "#6a3ef7");
+  //     ctx.fillStyle = gradient;
+  //     ctx.fillRect(0, 0, canvas.width, 100);
+
+  //     ctx.fillStyle = "white";
+  //     ctx.font = "bold 48px Arial";
+  //     ctx.textAlign = "center";
+  //     ctx.fillText(event.event_name || "Untitled Event", canvas.width / 2, 65);
+
+  //     ctx.drawImage(qrImage, 100, 150, 400, 400);
+
+  //     ctx.fillStyle = "#000";
+  //     ctx.font = "28px Arial";
+  //     ctx.textAlign = "left";
+  //     ctx.fillText(`Date: ${formatDate(event.event_date)}`, 550, 180);
+  //     ctx.fillText(`Time: ${event.duration}`, 550, 230);
+  //     ctx.fillText(`Location: ${event.address}`, 550, 280);
+
+  //     ctx.fillText(`Ticket ID: ${ticket.ticket_id}`, 550, 360);
+  //     ctx.fillText(`Price: $${event.ticket_price}`, 550, 410);
+  //     ctx.fillText(`Purchased: ${formatDate(ticket.created_at)}`, 550, 460);
+
+  //     const walletShort = `${ticket.wallet_address?.slice(0, 6)}...${ticket.wallet_address?.slice(-4)}`;
+  //     ctx.fillText(`Wallet: ${walletShort}`, 100, 600);
+
+  //     ctx.fillStyle = ticket.status === "valid" ? "#28a745" : "#6c757d";
+  //     ctx.beginPath();
+  //     ctx.roundRect(1550, 40, 250, 50, 25);
+  //     ctx.fill();
+
+  //     ctx.fillStyle = "white";
+  //     ctx.font = "bold 30px Arial";
+  //     ctx.textAlign = "center";
+  //     ctx.fillText(ticket.status?.toUpperCase(), 1675, 75);
+
+  //     const url = canvas.toDataURL("image/png");
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = `EventGo-Ticket-${ticket.ticket_id}.png`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //   };
+
+  //   qrImage.src = qrCanvas.toDataURL("image/png");
+  // };
 
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const ticketRes = await axios.get(`http://localhost:5000/api/tickets/getTicket/${id}`);
-        const eventRes = await axios.get(`http://localhost:5000/api/events/byId/${ticketRes.data.event_id}`);
+        const ticketRes = await axios.get(
+          `http://localhost:5000/api/tickets/getTicket/${id}`
+        );
+        const eventRes = await axios.get(
+          `http://localhost:5000/api/events/byId/${ticketRes.data.event_id}`
+        );
         setTicket(ticketRes.data);
         setEvent(eventRes.data);
       } catch (err) {
@@ -113,7 +215,9 @@ const TicketDetail = () => {
     return (
       <div className="ticket-detail-error">
         <p>{error || "Ticket not found."}</p>
-        <button onClick={() => navigate("/my-tickets")}>Back to My Tickets</button>
+        <button onClick={() => navigate("/my-tickets")}>
+          Back to My Tickets
+        </button>
       </div>
     );
   }
@@ -132,12 +236,19 @@ const TicketDetail = () => {
       <div className="ticket-detail">
         <div className="ticket-header">
           <h1>{event.event_name}</h1>
-          <div className={`ticket-status status-${ticket.status}`}>{ticket.status}</div>
+          <div className={`ticket-status status-${ticket.status}`}>
+            {ticket.status}
+          </div>
         </div>
 
         <div className="ticket-body">
           <div className="ticket-qr" ref={qrCodeRef}>
-            <QRCodeCanvas value={ticketData} size={1200} level="H" style={{ width: 200, height: 200 }}/>
+            <QRCodeCanvas
+              value={ticketData}
+              size={1200}
+              level="H"
+              style={{ width: 200, height: 200 }}
+            />
             <p className="ticket-id">ID: {ticket.ticket_id}</p>
             <button onClick={downloadTicketCard} className="download-qr-button">
               <i className="fas fa-download"></i> Download Ticket
@@ -178,8 +289,12 @@ const TicketDetail = () => {
               <div className="info-item">
                 <i className="fas fa-wallet"></i>
                 <span>
-                  Wallet: {ticket.wallet_address
-                    ? `${ticket.wallet_address.slice(0, 6)}...${ticket.wallet_address.slice(-4)}`
+                  Wallet:{" "}
+                  {ticket.wallet_address
+                    ? `${ticket.wallet_address.slice(
+                        0,
+                        6
+                      )}...${ticket.wallet_address.slice(-4)}`
                     : "N/A"}
                 </span>
               </div>
@@ -188,7 +303,10 @@ const TicketDetail = () => {
         </div>
 
         <div className="ticket-actions">
-          <button onClick={() => navigate("/my-tickets")} className="back-button">
+          <button
+            onClick={() => navigate("/my-tickets")}
+            className="back-button"
+          >
             Back to My Tickets
           </button>
         </div>

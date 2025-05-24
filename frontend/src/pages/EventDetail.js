@@ -37,7 +37,7 @@ const EventDetail = () => {
         }
 
         const data = await response.json();
-        console.log("event data",data);
+        console.log("event data", data);
 
         // Assuming the API returns a single event object, not an array
         const foundEvent = data; // Assuming the event data is in eventData property
@@ -51,7 +51,9 @@ const EventDetail = () => {
             time: foundEvent.duration,
             price: foundEvent.ticket_price,
             sold_tickets: foundEvent.sold_tickets,
-            availableTickets: Number(foundEvent.total_tickets) - Number(foundEvent.sold_tickets),
+            availableTickets:
+              Number(foundEvent.total_tickets) -
+              Number(foundEvent.sold_tickets),
             description: foundEvent.description,
             address: foundEvent.address,
             walletAddress: foundEvent.wallet_address,
@@ -89,7 +91,7 @@ const EventDetail = () => {
         "http://localhost:5000/api/tickets/buy",
         {
           event_id: event.id,
-          amount_paid: event.price * quantity
+          amount_paid: event.price * quantity,
         },
         {
           headers: {
@@ -101,15 +103,17 @@ const EventDetail = () => {
 
       const data = response.data;
       console.log(data);
-      console.log("Event data:",event)
+      console.log("Event data:", event);
       const updateResponse = await axios.patch(
         `http://localhost:5000/api/events/${event.id}`,
         {
-          sold_tickets: (parseInt(event.sold_tickets) + 1) 
-        },{
-        "type": "PATCH",
-      })
-      console.log(updateResponse.data)
+          sold_tickets: parseInt(event.sold_tickets) + 1,
+        },
+        {
+          type: "PATCH",
+        }
+      );
+      console.log(updateResponse.data);
 
       // Check for connected wallet with improved detection
       // const connectedWallet =
@@ -214,7 +218,8 @@ const EventDetail = () => {
         <div className="event-detail-main">
           <div className="event-image">
             <img
-              src="./eventImg.png"
+              // src="./eventImg.png"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnDlmtDo5QoWqGFMdioUQHqAp-NvqTZht_ag&s"
               alt={event.title}
             />
           </div>
@@ -233,7 +238,7 @@ const EventDetail = () => {
 
             <div className="event-location">
               <i className="fas fa-map-marker-alt"></i>
-              <span>{event.location}</span>
+              <span>{event.address}</span>
             </div>
 
             <div className="event-price">
