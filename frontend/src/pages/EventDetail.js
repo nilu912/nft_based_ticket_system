@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext"; // Add this import
 import "./EventDetail.css";
 import axios from "axios";
+import { formatEther, parseUnits, formatUnits } from "ethers";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -243,7 +244,9 @@ const EventDetail = () => {
 
             <div className="event-price">
               <span className="price-label">Price per ticket:</span>
-              <span className="price-value">${event.price}</span>
+              <span className="price-value">
+                Gwei {formatUnits(event.price, "gwei")}
+              </span>
             </div>
 
             <div className="event-description">
@@ -290,7 +293,9 @@ const EventDetail = () => {
 
             <div className="total-price">
               <span className="label">Total Price:</span>
-              <span className="value">${event.price}</span>
+              <span className="value">
+                Gwei {formatUnits(event.price, "gwei")}
+              </span>
             </div>
 
             <button
@@ -326,7 +331,8 @@ const EventDetail = () => {
                 <strong>Quantity:</strong> {1}
               </p>
               <p>
-                <strong>Total Price:</strong> ${event.price}
+                <strong>Total Price:</strong>Gwei{' '}
+                {formatUnits(event.price, "gwei")}
               </p>
             </div>
             <div className="modal-actions">

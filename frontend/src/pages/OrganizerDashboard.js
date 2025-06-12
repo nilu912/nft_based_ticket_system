@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"; // Added Link import
 import "./OrganizerDashboard.css";
 import axios from "axios";
+import { parseUnits } from "ethers";
 
 const OrganizerDashboard = () => {
   const [events, setEvents] = useState([]);
@@ -11,6 +12,7 @@ const OrganizerDashboard = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [pirceUnit, setPriceUnit] = useState("wei");
   const [newEvent, setNewEvent] = useState({
     // new event data
     title: "",
@@ -43,7 +45,7 @@ const OrganizerDashboard = () => {
         );
 
         const data = await response.json();
-        console.log(data.eventData[0]);
+        // console.log(data.eventData[0]);
         const filteredEvents = data.eventData.map((event) => {
           // Destructure and omit unwanted fields
           const {
@@ -90,6 +92,10 @@ const OrganizerDashboard = () => {
     fetchData();
   }, [refreshTrigger]); // Empty dependency array to run only once
 
+  const onPriceUintChange = (e) => {
+    console.log(e.target.value);
+    setPriceUnit(e.target.value);
+  };
   const handleCreateEvent = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -99,18 +105,25 @@ const OrganizerDashboard = () => {
       alert("You must be logged in to create an event.");
       return;
     }
-
+    const parsedPrice = parseUnits(newEvent.price, pirceUnit).toString();
+    console.log("parsedPrice", parsedPrice);
+    const updatedEvent = {
+      ...newEvent,
+      price: parsedPrice,
+    }
+    setNewEvent(updatedEvent);
+    console.log(updatedEvent);
     // try {
     const eventResponse = await axios.post(
       "http://localhost:5000/api/events/create",
       {
-        event_name: newEvent.title,
-        description: newEvent.description,
-        event_date: newEvent.date,
-        duration: newEvent.time,
-        total_tickets: newEvent.availableTickets,
-        ticket_price: newEvent.price,
-        address: newEvent.location,
+        event_name: updatedEvent.title,
+        description: updatedEvent.description,
+        event_date: updatedEvent.date,
+        duration: updatedEvent.time,
+        total_tickets: updatedEvent.availableTickets,
+        ticket_price: updatedEvent.price,
+        address: updatedEvent.location,
       },
       {
         headers: {
@@ -277,16 +290,34 @@ const OrganizerDashboard = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Price ($)</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={newEvent.price}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
-                  required
-                />
+                <label>Price</label>
+                <div className="price-subdiv">
+                  <input
+                    style={{ width: "80%" }}
+                    type="number"
+                    name="price"
+                    value={newEvent.price}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                  <select
+                    style={{ width: "20%" }}
+                    value={pirceUnit}
+                    name="priceUnit"
+                    onChange={onPriceUintChange}
+                    required
+                  >
+                    <option value="wei">Wei</option>
+                    <option value="kwei">Kwei</option>
+                    <option value="mwei">Mwei</option>
+                    <option value="gwei">Gwei</option>
+                    <option value="twei">Twei</option>
+                    <option value="pwei">Pwei</option>
+                    <option value="ether">Ether</option>
+                  </select>
+                </div>
               </div>
               <div className="form-group">
                 <label>Category</label>

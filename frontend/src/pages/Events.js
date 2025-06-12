@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Events.css";
+import { formatEther, parseUnits, formatUnits } from "ethers";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -48,6 +49,7 @@ const Events = () => {
             total_tickets,
             sold_tickets,
             // Omit unwanted properties
+            category,
             address,
             created_at,
             wallet_address,
@@ -142,7 +144,7 @@ const Events = () => {
     if (filters.category !== "all") {
       filtered = filtered.filter(
         (event) =>
-          event.category.toLowerCase() === filters.category.toLowerCase()
+          (event.category || '').toLowerCase() === filters.category.toLowerCase()
       );
     }
 
@@ -382,7 +384,7 @@ const Events = () => {
                       color: "#2d2d2d",
                     }}
                   >
-                    ${event.price}
+                    Gwei {formatUnits(event.price, 'gwei')}
                   </span>
                   <button
                     style={{
