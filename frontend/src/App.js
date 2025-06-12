@@ -11,6 +11,7 @@ import "./App.css";
 import TicketDetail from "./pages/TicketDetail";
 import TicketScanner from "./pages/TicketScanner";
 import RegisterPage from "./pages/RegisterPage";
+import PrivateRoute from "./context/PrivateRoute";
 
 function App() {
   return (
@@ -25,8 +26,22 @@ function App() {
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/tickets/:id" element={<TicketDetail />} />
-            <Route path="/organizer" element={<OrganizerDashboard />} />
-            <Route path="/ticket-scanner" element={<TicketScanner />} />
+            <Route
+              path="/organizer"
+              element={
+                <PrivateRoute>
+                  <OrganizerDashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/ticket-scanner"
+              element={
+                <PrivateRoute>
+                  <TicketScanner />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </div>
       </Router>

@@ -63,7 +63,7 @@ const Events = () => {
             date: event_date,
             time: duration,
             price: ticket_price,
-            availableTickets: Number(total_tickets)-Number(sold_tickets),
+            availableTickets: Number(total_tickets) - Number(sold_tickets),
             description: rest.description,
             address: address, // Include description or other necessary fields
             // You can include other properties from `rest` if needed
@@ -91,9 +91,9 @@ const Events = () => {
       const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(
         (event) =>
-          event.title.toLowerCase().includes(searchTerm) ||
-          event.description.toLowerCase().includes(searchTerm) ||
-          event.category.toLowerCase().includes(searchTerm)
+          (event.title || "").toLowerCase().includes(searchTerm) ||
+          (event.description || "").toLowerCase().includes(searchTerm) ||
+          (event.category || "").toLowerCase().includes(searchTerm)
       );
     }
 

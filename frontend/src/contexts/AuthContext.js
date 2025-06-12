@@ -20,8 +20,9 @@ export const AuthProvider = ({ children }) => {
   // const [ provider, setProvider] = useState(null)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log(token);
+    // console.log(token);
     if (token === null) return;
+    console.log("checking!");
     checkWalletConnection();
   }, []);
 

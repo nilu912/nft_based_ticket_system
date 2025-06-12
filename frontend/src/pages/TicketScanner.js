@@ -7,9 +7,9 @@ import axios from "axios";
 import { ethers } from "ethers";
 
 import nftABI from "../contracts/MyNFT.json";
-// const provider = new ethers.JsonRpcProvider(process.env.REACT_APP_API_URL);
-const provider = new ethers.BrowserProvider(window.ethereum);
-const signer = await provider.getSigner();
+// // const provider = new ethers.JsonRpcProvider(process.env.REACT_APP_API_URL);
+// const provider = new ethers.BrowserProvider(window.ethereum);
+// const signer = await provider.getSigner();
 
 const TicketScanner = () => {
   const navigate = useNavigate();
@@ -126,6 +126,9 @@ const TicketScanner = () => {
   const validateTicket = async (ticketData) => {
     try {
       // console.log("contract time",selectedEvent);
+      // const provider = new ethers.JsonRpcProvider(process.env.REACT_APP_API_URL);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
 
       console.log(nftABI.abi);
       // console.log("selected event", Number(selectedEventRef.current));
